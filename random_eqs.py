@@ -1,3 +1,19 @@
+#To run this code, do the following:
+#python random_eqs.py -n [NUMBER OF BUSES] -iters [NUMBER OF ITERATIONS] -edges [EDGES]
+#
+#To specify edges, it should be a string of the form "ab,cd,eg,...,jk" where each variable here is a number.
+#For example, the complete graph on 3 buses is "01,12,02", as we assume it's undirected.
+#If you don't use the -edges command, it will default to a complete graph.
+#
+#Example 1: python random_eqs.py -n 4 -iters 1000
+#This will generate 1000 complete 4 bus graphs with normal random edge weights
+#It will then print out the distribution of real solutions.
+#
+#Examples 2: python random_eqs.py -n 4 -iters 1000 -edges "01,12,23,03"
+#This generates a graph on 4 buses with edges (0,1), (1,2), (2,3), (0,3)
+#
+#
+
 import numpy as np
 import subprocess
 import sys
@@ -135,7 +151,6 @@ else:
 A = np.zeros([n,n])
 for e in edges:
 	A[e[0],e[1]] = A[e[1],e[0]] = 1
-print A
 
 #This is the main call of the algorithm
 eq_loop(A,iters,tol,n,verbose=verbose)
