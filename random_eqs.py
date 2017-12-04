@@ -19,6 +19,9 @@ import subprocess
 import sys
 import argparse
 
+#Input: Matrix A describing the adjacency of the graph.
+#Output: A string corresponding to random equations in this system.
+#The format of the string is amenable to PHC.
 def random_pq_eqs(A):
 	n = A.shape[0]
 	x_names = ['x'+str(i) for i in range(1,n)]
@@ -48,6 +51,8 @@ def random_pq_eqs(A):
 	eqs = f+h
 	return eqs
 
+
+#Writes eqs to the file specified by filename.
 def write_equations(eqs,filename):
 	disp = str(len(eqs))+'\n'
 	for coeff in eqs:
@@ -58,28 +63,37 @@ def write_equations(eqs,filename):
 	f.close()
 
 
+#This generates iters many random equations according to the n-bus system
+#with adjacency matrix A.
+#tol is the tolerance for certifying a number is real (ie. imaginary part < tol)
+#verbose indicates that it will tell you what percentage is done
+#This method prints the distribution of real solutions to the screen.
 def eq_loop(A,iters,tol,n,verbose=False):
-	seed = np.random.randint(0,100000)
-	freq_count = {}
-	prog_checker = iters/10
+	seed = np.random.randint(0,100000)#Random seed
+	freq_count = {}#This dictionary will record how frequently we see each number of real sol
+	prog_checker = iters/10#This will be udpated to say what percentage is completed
 	for i in range(iters):
-		eqs = random_pq_eqs(A)
-		write_equations(eqs,'temp_'+str(seed)+"_"+str(i))
+		eqs = random_pq_eqs(A) #Generate random equations
+		write_equations(eqs,'temp_'+str(seed)+"_"+str(i)) #Write them to a file
 
-
+		#We now try to solve them using phc
 		try:
 			subprocess.call(["./phc","-b","temp_"+str(seed)+"_"+str(i)+"_eqs.txt","temp_"+str(seed)+"_"+str(i)+"_roots.txt"])
 			subprocess.call(["./phc","-x","temp_"+str(seed)+"_"+str(i)+"_eqs.txt","temp_"+str(seed)+"_"+str(i)+"_eqs.dic"])
 		except:
-			print "Solving system "+str(i)+" failed"
+			print "Solving system "+str(i)+" failed" #If something goes wrong
 
 		number_real = 0
 
+		#We now determine how many real solutions there were
 		try:
+			#This is the file from PHC recording all kinds of information about the solution set
 			f = open("temp_"+str(seed)+"_"+str(i)+"_eqs.dic","r")
 			s = f.read()
 			sols = eval(s)
-			known_keys = ['res','err','multiplicity','time','rco']
+			known_keys = ['res','err','multiplicity','time','rco']#These are known pieces of data the file contains that aren't useful to us
+			
+			#We now loop through the solutions and calculate how many are real.
 			for sol in sols:
 				is_real = True
 				for k in sol.keys():
@@ -90,6 +104,8 @@ def eq_loop(A,iters,tol,n,verbose=False):
 				if is_real:
 					number_real += 1
 			f.close()
+
+			#We update our frequency count
 			if number_real%2 ==0:
 				if number_real in freq_count.keys():
 					freq_count[number_real] += 1
@@ -100,6 +116,8 @@ def eq_loop(A,iters,tol,n,verbose=False):
 		except:
 			print "Could not read file "+str(i)
 
+
+		#We now delete all the text files created
 		try:
 			subprocess.call(["rm","-f","temp_"+str(seed)+"_"+str(i)+"_eqs.txt"])
 		except:
@@ -113,7 +131,8 @@ def eq_loop(A,iters,tol,n,verbose=False):
 		try:
 			subprocess.call(["rm","-f","temp_"+str(seed)+"_"+str(i)+"_roots.txt"])
 		except:
-			print "Error removing temp_"+str(seed)+"_"+str(i)+"_roots.txt"			
+			print "Error removing temp_"+str(seed)+"_"+str(i)+"_roots.txt"		
+
 
 		#If verbose, we give a progress update every so often
 		if verbose:
@@ -121,6 +140,7 @@ def eq_loop(A,iters,tol,n,verbose=False):
 				sys.stdout.write(str((float(i)/iters)*100)+' percent completed\n')
 
 
+	#We now print the frequency count to the screen.
 	num_roots_found = freq_count.keys()
 	num_roots_found.sort() #We sort from smallest number to largest number of real roots
 	print ""
@@ -128,12 +148,14 @@ def eq_loop(A,iters,tol,n,verbose=False):
 	for k in num_roots_found:
 		print str(k) + ' : ' + str(freq_count[k])
 
+
+#Here we take the arguments passed via the command line.
 parser = argparse.ArgumentParser()
 parser.add_argument('-iters', type=int, dest="iters", default = 1000) #How many graphs to check
 parser.add_argument('-tol', type=float, dest="tol", default = 0.0000001) #What tolerance should we use to determine if something is a real solution
 parser.add_argument('-v',action='store_true', default=False, dest='verbose') #If verbose, it will tell you when it has done 10, 20, ... %
-parser.add_argument('-n', type=int,dest="n", default=4)
-parser.add_argument('-edges', dest="e", type=str, default="")
+parser.add_argument('-n', type=int,dest="n", default=4)#Number of buses
+parser.add_argument('-edges', dest="e", type=str, default="")#Edge structure, eg. "01,12,23" gives the complete 3-bus
 
 args = vars(parser.parse_args())
 iters = args["iters"]
@@ -141,11 +163,12 @@ verbose = args["verbose"]
 tol = args["tol"]
 n = args["n"]
 edge_string = args["e"]
+
+#We now construct the edges corresponding to the edge string
 if len(edge_string) > 0:
 	edges = [(int(a[0]),int(a[1])) for a in edge_string.split(",")]
 else:
 	edges = [(i,j) for i in range(n) for j in range(i+1,n)]
-
 
 #This creates the adjacency matrix
 A = np.zeros([n,n])
