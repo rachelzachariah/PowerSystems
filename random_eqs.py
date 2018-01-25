@@ -22,7 +22,7 @@ import argparse
 #Input: Matrix A describing the adjacency of the graph.
 #Output: A string corresponding to random equations in this system.
 #The format of the string is amenable to PHC.
-def random_pq_eqs(A):
+def random_pq_eqs(A,mu,var):
 	n = A.shape[0]
 	x_names = ['x'+str(i) for i in range(1,n)]
 	y_names = ['y'+str(i) for i in range(1,n)]
@@ -33,7 +33,7 @@ def random_pq_eqs(A):
 		for j in range(i,n):
 			if A[i,j] != 0:
 				### This distribution controls the susceptances ###
-				B[i,j] = B[j,i] = np.random.normal(0,1)
+				B[i,j] = B[j,i] = np.random.normal(mu,var)
 	x = [str(1)]+x_names
 	y = [str(0)]+y_names
 
@@ -68,12 +68,12 @@ def write_equations(eqs,filename):
 #tol is the tolerance for certifying a number is real (ie. imaginary part < tol)
 #verbose indicates that it will tell you what percentage is done
 #This method prints the distribution of real solutions to the screen.
-def eq_loop(A,iters,tol,n,verbose=False):
+def eq_loop(A,iters,tol,n,verbose=False,mu,var):
 	seed = np.random.randint(0,100000)#Random seed
 	freq_count = {}#This dictionary will record how frequently we see each number of real sol
 	prog_checker = iters/10#This will be udpated to say what percentage is completed
 	for i in range(iters):
-		eqs = random_pq_eqs(A) #Generate random equations
+		eqs = random_pq_eqs(A,mu,var) #Generate random equations
 		write_equations(eqs,'temp_'+str(seed)+"_"+str(i)) #Write them to a file
 
 		#We now try to solve them using phc
@@ -156,6 +156,8 @@ parser.add_argument('-tol', type=float, dest="tol", default = 0.0000001) #What t
 parser.add_argument('-v',action='store_true', default=False, dest='verbose') #If verbose, it will tell you when it has done 10, 20, ... %
 parser.add_argument('-n', type=int,dest="n", default=4)#Number of buses
 parser.add_argument('-edges', dest="e", type=str, default="")#Edge structure, eg. "01,12,23" gives the complete 3-bus
+parser.add_argument('-mu', dest="mu", type=int, default=0)#The mean of the random edges
+parser.add_argument('-var', dest="var", type=int, default=1)#The variance of the random edges
 
 args = vars(parser.parse_args())
 iters = args["iters"]
@@ -163,6 +165,8 @@ verbose = args["verbose"]
 tol = args["tol"]
 n = args["n"]
 edge_string = args["e"]
+mu = args["mu"]
+var = args["var"]
 
 #We now construct the edges corresponding to the edge string
 if len(edge_string) > 0:
@@ -176,7 +180,7 @@ for e in edges:
 	A[e[0],e[1]] = A[e[1],e[0]] = 1
 
 #This is the main call of the algorithm
-eq_loop(A,iters,tol,n,verbose=verbose)
+eq_loop(A,iters,tol,n,verbose=verbose,mu,var)
 
 #To change the distribution of the variables, see the commented parts of random_pq_eqs.
 #You can change to any of the distributions located at: https://docs.scipy.org/doc/numpy/reference/routines.random.html
