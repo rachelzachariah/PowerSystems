@@ -68,7 +68,7 @@ def write_equations(eqs,filename):
 #tol is the tolerance for certifying a number is real (ie. imaginary part < tol)
 #verbose indicates that it will tell you what percentage is done
 #This method prints the distribution of real solutions to the screen.
-def eq_loop(A,iters,tol,n,verbose=False,mu,var):
+def eq_loop(A,iters,tol,n,mu,var,verbose=False):
 	seed = np.random.randint(0,100000)#Random seed
 	freq_count = {}#This dictionary will record how frequently we see each number of real sol
 	prog_checker = iters/10#This will be udpated to say what percentage is completed
@@ -180,7 +180,7 @@ for e in edges:
 	A[e[0],e[1]] = A[e[1],e[0]] = 1
 
 #This is the main call of the algorithm
-eq_loop(A,iters,tol,n,verbose=verbose,mu,var)
+eq_loop(A,iters,tol,n,mu,var,verbose=verbose)
 
 #To change the distribution of the variables, see the commented parts of random_pq_eqs.
 #You can change to any of the distributions located at: https://docs.scipy.org/doc/numpy/reference/routines.random.html
