@@ -157,7 +157,7 @@ parser.add_argument('-v',action='store_true', default=False, dest='verbose') #If
 parser.add_argument('-n', type=int,dest="n", default=4)#Number of buses
 parser.add_argument('-edges', dest="e", type=str, default="")#Edge structure, eg. "01,12,23" gives the complete 3-bus
 parser.add_argument('-mu', dest="mu", type=int, default=0)#The mean of the random edges
-parser.add_argument('-var', dest="var", type=float, default=1.0)#The variance of the random edges
+parser.add_argument('-var', dest="var", type=float, default=1)#The variance of the random edges
 
 args = vars(parser.parse_args())
 iters = args["iters"]
