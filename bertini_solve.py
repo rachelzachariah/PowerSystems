@@ -154,7 +154,7 @@ g = args["g"]
 
 #We now construct the edges corresponding to the edge string
 if len(edge_string) > 0:
-	edges = [(b.split(',')[0],b.split(',')[1]) for b in edge_string.split(':')]
+	edges = [(int(b.split(',')[0]),int(b.split(',')[1])) for b in edge_string.split(':')]
 	if len(g) == 0:
 		graph_id = ''+edge_string+''
 	else:
