@@ -131,9 +131,9 @@ def eq_loop(A,iters,tol,n,graph_id,verbose=False):
 	t = time.localtime()
 	timestamp = time.strftime('%b-%d-%Y_%H:%M:%S', t)
 
-	with open('Data/real_dist_'+graph_id+'_'+timestamp,'w') as f:
+	with open('Data/dist_'+graph_id+'_'+timestamp,'w') as f:
 		for k in num_roots_found:
-			f.write(str(k) + ' : ' + str(freq_count[k]))
+			f.write(str(k) + ' : ' + str(freq_count[k])+'\n')
 
 #Here we take the arguments passed via the command line.
 parser = argparse.ArgumentParser()
@@ -142,6 +142,7 @@ parser.add_argument('-tol', type=float, dest="tol", default = 0.0000001) #What t
 parser.add_argument('-n', type=int,dest="n", default=4)#Number of buses
 parser.add_argument('-edges', dest="e", type=str, default="")#Edges structure, eg. "01,12,23"
 parser.add_argument('-v',action='store_true', default=False, dest='verbose') #If verbose, it will tell you when it has done 10, 20, ... %
+parser.add_argument('-g', dest = "g", type=str, default="")
 
 args = vars(parser.parse_args())
 iters = args["iters"]
@@ -149,19 +150,20 @@ verbose = args["verbose"]
 tol = args["tol"]
 n = args["n"]
 edge_string = args["e"]
+g = args["g"]
 
 #We now construct the edges corresponding to the edge string
 if len(edge_string) > 0:
 	edges = [(b.split(',')[0],b.split(',')[1]) for b in edge_string.split(':')]
+	if len(g) ==0: graph_id = ''+edge_string+''
 else:
 	edges = [(i,j) for i in range(n) for j in range(i+1,n)]
+	if len(g) == 0: graph_id = 'K'+str(n)
 
 #This creates the adjacency matrix
 A = np.zeros([n,n])
 for e in edges:
 	A[e[0],e[1]] = A[e[1],e[0]] = 1
-
-graph_id = 'G('+edge_string+')'
 
 #This is the main call of the algorithm
 eq_loop(A,iters,tol,n,graph_id,verbose=verbose)
