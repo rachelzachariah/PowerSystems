@@ -131,7 +131,7 @@ def eq_loop(A,iters,tol,n,graph_id,verbose=False):
 	t = time.localtime()
 	timestamp = time.strftime('%b-%d-%Y_%H:%M:%S', t)
 
-	with open('Data/real_dist_'+graph_id+'_'+timestamp):
+	with open('Data/real_dist_'+graph_id+'_'+timestamp,'w') as f:
 		for k in num_roots_found:
 			f.write(str(k) + ' : ' + str(freq_count[k]))
 
