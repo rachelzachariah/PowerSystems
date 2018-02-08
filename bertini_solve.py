@@ -155,10 +155,16 @@ g = args["g"]
 #We now construct the edges corresponding to the edge string
 if len(edge_string) > 0:
 	edges = [(b.split(',')[0],b.split(',')[1]) for b in edge_string.split(':')]
-	if len(g) ==0: graph_id = ''+edge_string+''
+	if len(g) == 0:
+		graph_id = ''+edge_string+''
+	else:
+		graph_id = g
 else:
 	edges = [(i,j) for i in range(n) for j in range(i+1,n)]
-	if len(g) == 0: graph_id = 'K'+str(n)
+	if len(g) == 0:
+		graph_id = 'K'+str(n)
+	else:
+		graph_id = g
 
 #This creates the adjacency matrix
 A = np.zeros([n,n])
