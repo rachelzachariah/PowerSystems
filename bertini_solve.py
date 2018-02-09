@@ -1,14 +1,26 @@
+#Make sure that the folder this is located in has a copy of Bertini.
+#Also, make sure to create a folder called Data in this folder in order to properly store results.
+#
 #To run this code, do the following:
 #python bertini_solve.py -n [NUMBER OF BUSES] -iters [NUMBER OF ITERATIONS] -edges [EDGES]
 #
-#To specify edges, it should be a string of the form "ab,cd,eg,...,jk" where each variable here is a number.
-#For example, the complete graph on 3 buses is "01,12,02", as we assume it's undirected.
+#To specify edges, it should be a string of the form "a,b:c,d:e,g:...:j,k" where each variable here is a number.
+#For example, the complete graph on 3 buses is "0,1:1,2:0,2", as we assume it's undirected.
 #If you don't use the -edges command, it will default to a complete graph.
 #
 #Example : python bertini_solve.py -n 4 -iters 1000 -edges "0,1:1,2:2,3:3,0"
 #This generates a graph on 4 buses with edges (0,1), (1,2), (2,3), (0,3)
 #It then generates 1000 random equations and tries to find instances with 12 real solutions
 #
+#The distribution of real solutions is saved in the Data folder as a .txt document.
+#Its file name will be "dist_(graph-id)_(timestamp).txt"
+#Here graph-id records the edge structure of G.
+#The hope is that later we can just merge all results with the same graph-id.
+#The timestamp is just so that different runs don't overwrite the file.
+#
+#If you'd like to use your own graph id, you can do this with the option -g
+#
+
 import numpy as np
 import subprocess
 import sys
