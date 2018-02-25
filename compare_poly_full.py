@@ -112,7 +112,7 @@ def eq_loop(A,iters,tol,n,graph_id,verbose=False):
 		num_elim_real = 0
 		for root in elim_roots:
 			if root.imag < tol:
-				num_elim_real += 1
+				num_elim_real += 2
 
 		write_equations(eqs,'temp_'+str(seed)+"_"+str(i))#Write them to a file
 
