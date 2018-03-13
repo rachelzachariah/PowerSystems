@@ -132,8 +132,8 @@ def eq_loop(A,iters,tol,n,graph_id,verbose=False):
 					var_index = n
 					num_finite_sol = int(finite_sol[0].strip())
 					for jj in range(num_finite_sol):
-						y_line = f[(2*n-3)*jj+ n +1]
-						y_val = y.strip()
+						y_line = finite_sol[(2*n-1)*jj+ n +1]
+						y_val = y_line.strip()
 						y_val_split = y_val.split(' ')
 						imag_part = float(y_val_split[1])
 						if abs(imag_part) <= tol:
