@@ -102,7 +102,7 @@ def eq_loop(A,iters,tol,n,graph_id,verbose=False):
 	prog_checker = iters/10#This will be udpated to say what percentage is completed
 
 	for i in range(iters):
-		eqs, b = random_pq_eqs(A)#Generate random equations
+		eqs = random_pq_eqs(A)#Generate random equations
 
 		# elim_coeff = poly_coeff(b)
 		# elim_roots = np.roots(elim_coeff)
