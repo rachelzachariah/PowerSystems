@@ -47,7 +47,6 @@ def random_pq_eqs(A):
 				B[i,j] = B[j,i] = np.random.normal(0,1)
 	x = [str(1)]+x_names
 	y = [str(0)]+y_names
-	b = [B[0,1],B[0,3],B[1,2],B[1,3],B[2,3]]
 
 	f = []
 	h = []
@@ -61,7 +60,7 @@ def random_pq_eqs(A):
 		f.append(p_eq)
 		h.append(h_eq)
 	eqs = f+h
-	return eqs, b
+	return eqs
 
 #Writes eqs to the file specified by filename.
 def write_equations(eqs,filename):
